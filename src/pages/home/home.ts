@@ -12,4 +12,9 @@ export class HomePage {
 
   }
 
+  login(){
+    //this.navCtrl.push('CategoriasPage'); //navega de uma página para outra, colocar a seta de voltar na toolbar
+    this.navCtrl.setRoot('CategoriasPage');
+  }
+
 }
