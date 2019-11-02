@@ -25,7 +25,8 @@ export class HomePage {
     //this.navCtrl.push('CategoriasPage'); //navega de uma página para outra, colocar a seta de voltar na toolbar
     this.auth.authenticate(this.creds)
       .subscribe(response => {
-        console.log(response.headers.get('Authorization'));
+        //console.log(response.headers.get('Authorization'));
+        this.auth.successfulLogin(response.headers.get('Authorization'));
         this.navCtrl.setRoot('CategoriasPage');
       },
       error => {});   
