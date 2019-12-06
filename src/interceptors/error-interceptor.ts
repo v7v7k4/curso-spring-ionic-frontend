@@ -2,11 +2,12 @@ import { Injectable } from '@angular/core';
 import { HttpEvent, HttpInterceptor, HttpHandler, HttpRequest, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { Observable } from 'rxjs/Rx'; // IMPORTANTE: IMPORT ATUALIZADO
 import { StorageService } from '../services/storage.service';
+import { AlertController } from 'ionic-angular';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
 
-    constructor(public storage: StorageService){
+    constructor(public storage: StorageService, public alertController: AlertController){
 
     }
 
@@ -26,9 +27,14 @@ export class ErrorInterceptor implements HttpInterceptor {
             console.log(errorObj);
 
             switch(errorObj.status){
-                case 403 : 
-                this.handle403();
-                break;
+                case 401:
+                    this.handle401();
+                    break;
+                case 403: 
+                    this.handle403();
+                    break;
+                default:
+                    this.handleDefaultError(errorObj);
             }
 
             return Observable.throw(errorObj);
@@ -38,6 +44,30 @@ export class ErrorInterceptor implements HttpInterceptor {
     handle403(){
         //possivel localUser que esta no storage está inválido, então remove o possivel localuser do storage
         this.storage.setLocalUser(null);
+    }
+
+    handle401(){
+        let alert = this.alertController.create({
+            title: 'Erro 401: falha de autenticação',
+            message: 'Email ou senha incorretos',
+            enableBackdropDismiss: false, //apertar no botão do alert para sair do alert e não apertar fora
+            buttons: [
+                {text: 'OK'}
+            ]
+        });
+        alert.present();
+    }
+
+    handleDefaultError(erro){
+        let alert = this.alertController.create({
+            title: 'Erro ' + erro.status + ': ' + erro.error,
+            message: erro.message,
+            enableBackdropDismiss: false, //apertar no botão do alert para sair do alert e não apertar fora
+            buttons: [
+                {text: 'OK'}
+            ]
+        });
+        alert.present();
     }
 }
 
